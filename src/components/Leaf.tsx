@@ -1,5 +1,6 @@
 // @ts-ignore
-const Leaf = ({ attributes, children, leaf }) => {
+// TODO: write interface, do something with if clauses
+export const Leaf = ({ attributes, children, leaf }) => {
     if (leaf.bold) {
         children = <strong>{children}</strong>
     }
@@ -17,6 +18,4 @@ const Leaf = ({ attributes, children, leaf }) => {
     }
 
     return <span {...attributes}>{children}</span>
-}
-
-export default Leaf;
+};

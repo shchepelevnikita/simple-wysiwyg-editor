@@ -1,5 +1,6 @@
 // @ts-ignore
-const Element = ({ attributes, children, element }) => {
+// TODO: write interface, do something with switch
+export const Element = ({ attributes, children, element }) => {
     const style = { textAlign: element.align }
     switch (element.type) {
         case 'block-quote':
@@ -46,5 +47,3 @@ const Element = ({ attributes, children, element }) => {
             )
     }
 }
-
-export default Element;

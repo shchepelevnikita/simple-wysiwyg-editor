@@ -2,11 +2,11 @@ import React, {useCallback, useMemo, useState} from 'react';
 import {BaseEditor, createEditor, Descendant, Editor} from 'slate';
 import {Slate, Editable, withReact, ReactEditor} from 'slate-react';
 import { withHistory } from 'slate-history';
-import MarkButton from "./MarkButton";
+import MarkButton from "./MarkButton/MarkButton";
 import BlockButton from "./BlockButton";
-import {Toolbar} from './Toolbar';
-import Leaf from "./Leaf";
-import Element from "./Element";
+import {Toolbar} from './Toolbar/Toolbar';
+import {Leaf} from "./Leaf";
+import {Element} from "./Element";
 import isHotkey from 'is-hotkey';
 
 const HOTKEYS = {
@@ -16,7 +16,7 @@ const HOTKEYS = {
   'mod+`': 'code',
 };
 
-export const isMarkActive = (editor: Editor, format: string | number) => {
+export const isMarkActive = (editor: Editor, format: string) => {
   const marks = Editor.marks(editor);
   // @ts-ignore
   return marks ? marks[format] === true : false;
@@ -57,7 +57,8 @@ const ContentEditor = () => {
 
   return (
     <Slate editor={editor} value={value} onChange={(newValue) => setValue(newValue)}>
-      <Toolbar>
+      <Toolbar className="toolbar">
+        // TODO: make button generation in cycle (now it's rigid)
         <MarkButton format="bold" icon="format_bold" />
         <MarkButton format="italic" icon="format_italic" />
         <MarkButton format="underline" icon="format_underlined" />

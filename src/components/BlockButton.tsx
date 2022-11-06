@@ -1,7 +1,9 @@
+// @ts-nocheck
+
 import {useSlate} from "slate-react";
 import {Editor, Transforms, Element as SlateElement} from "slate";
-import {Button} from "./Button";
-import {Icon} from "./Icon";
+import {Button} from "./Button/Button";
+import {Icon} from "./Icon/Icon";
 
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify'];
@@ -16,7 +18,6 @@ const isBlockActive = (editor: Editor, format: any, blockType = 'type') => {
             match: n =>
                 !Editor.isEditor(n) &&
                 SlateElement.isElement(n) &&
-                // @ts-ignore
                 n[blockType] === format,
         })
     )
@@ -43,7 +44,6 @@ const toggleBlock = (editor: Editor, format: string) => {
     let newProperties: Partial<SlateElement>
     if (TEXT_ALIGN_TYPES.includes(format)) {
         newProperties = {
-            // @ts-ignore
             align: isActive ? undefined : format,
         }
     } else {
@@ -56,24 +56,23 @@ const toggleBlock = (editor: Editor, format: string) => {
 
     if (!isActive && isList) {
         const block = { type: format, children: [] }
-        // @ts-ignore
         Transforms.wrapNodes(editor, block)
     }
 }
 
-// @ts-ignore
 const BlockButton = ({ format, icon }) => {
     const editor = useSlate();
     return (
         <Button
+            className="button mark-button"
             active={isBlockActive(
                 editor,
                 format,
                 TEXT_ALIGN_TYPES.includes(format) ? 'align' : 'type'
             )}
-            onMouseDown={(event: { preventDefault: () => void; }) => {
-                event.preventDefault()
-                toggleBlock(editor, format)
+            onClick={(event) => {
+                event.preventDefault();
+                toggleBlock(editor, format);
             }}
         >
             <Icon>{icon}</Icon>
