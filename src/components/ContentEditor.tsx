@@ -58,7 +58,7 @@ const ContentEditor = () => {
   return (
     <Slate editor={editor} value={value} onChange={(newValue) => setValue(newValue)}>
       <Toolbar className="toolbar">
-        // TODO: make button generation in cycle (now it's rigid)
+        {/* TODO: make button generation in cycle (now it's rigid) */}
         <MarkButton format="bold" icon="format_bold" />
         <MarkButton format="italic" icon="format_italic" />
         <MarkButton format="underline" icon="format_underlined" />
