@@ -1,7 +1,10 @@
+import { BlockMath } from 'react-katex';
+
 // @ts-ignore
 // TODO: write interface, do something with switch
 export const Element = ({ attributes, children, element }) => {
-    const style = { textAlign: element.align }
+    const style = { textAlign: element.align };
+    
     switch (element.type) {
         case 'block-quote':
             return (
@@ -38,6 +41,12 @@ export const Element = ({ attributes, children, element }) => {
                 <ol style={style} {...attributes}>
                     {children}
                 </ol>
+            )
+        case 'block-math': 
+            return (
+                <BlockMath style={style} {...attributes}>
+                    {children}
+                </BlockMath>
             )
         default:
             return (

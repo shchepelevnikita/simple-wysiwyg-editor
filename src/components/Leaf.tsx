@@ -1,3 +1,5 @@
+import { InlineMath } from 'react-katex';
+
 // @ts-ignore
 // TODO: write interface, do something with if clauses
 export const Leaf = ({ attributes, children, leaf }) => {
@@ -15,6 +17,10 @@ export const Leaf = ({ attributes, children, leaf }) => {
 
     if (leaf.underline) {
         children = <u>{children}</u>
+    }
+
+    if (leaf.inlineMath) {
+        children = <InlineMath>\int_0^\infty x^2 dx</InlineMath>
     }
 
     return <span {...attributes}>{children}</span>
