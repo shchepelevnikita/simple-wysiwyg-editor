@@ -1,8 +1,9 @@
-import React, {ReactNode} from "react";
+import React, {ReactNode, SyntheticEvent} from "react";
 
 export type BaseProps = {
-    className: string;
+    className?: string;
     [key: string]: unknown; // what the hell is this ?
+    onClick?: (event: SyntheticEvent) => void;
 }
 
 export type PropsWithChildren = {
@@ -24,3 +25,7 @@ export type IconProps = PropsWithChildren;
 export type ToolbarProps = BaseProps & PropsWithChildren;
 
 export type MenuProps = BaseProps & PropsWithChildren;
+
+export type PredictionProps = BaseProps & {
+    predictions: string[];
+};

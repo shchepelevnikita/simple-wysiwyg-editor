@@ -1,6 +1,6 @@
 import React from "react";
-import {Menu} from "../Menu/Menu";
-import {ToolbarProps} from "../../types/types";
+import {Menu} from "../../menu/Menu";
+import {ToolbarProps} from "../../../types/types";
 
 import './style.css';
 

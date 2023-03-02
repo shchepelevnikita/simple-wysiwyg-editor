@@ -2,8 +2,8 @@
 
 import {useSlate} from "slate-react";
 import {Editor, Transforms, Element as SlateElement} from "slate";
-import {Button} from "./Button/Button";
-import {Icon} from "./Icon/Icon";
+import {Button} from "../Button/Button";
+import {Icon} from "../../icons/Icon/Icon";
 
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify'];

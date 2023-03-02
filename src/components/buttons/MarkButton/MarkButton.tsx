@@ -1,8 +1,8 @@
 import {useSlate} from "slate-react";
-import {isMarkActive, toggleMark} from "../ContentEditor";
+import {isMarkActive, toggleMark} from "../../ContentEditor";
 import {Button} from "../Button/Button";
-import {Icon} from "../Icon/Icon";
-import {MarkButtonProps} from "../../types/types";
+import {Icon} from "../../icons/Icon/Icon";
+import {MarkButtonProps} from "../../../types/types";
 
 const MarkButton = ({ format, icon }: MarkButtonProps) => {
     const editor = useSlate();
