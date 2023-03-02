@@ -1,19 +1,28 @@
-import React, {useCallback, useMemo, useState} from 'react';
-import {BaseEditor, createEditor, Descendant, Editor} from 'slate';
+import React, {SyntheticEvent, useCallback, useEffect, useMemo, useState} from 'react';
+import {BaseEditor, createEditor, Descendant, Editor, BaseRange} from 'slate';
 import {Slate, Editable, withReact, ReactEditor} from 'slate-react';
 import { withHistory } from 'slate-history';
-import MarkButton from "./MarkButton/MarkButton";
-import BlockButton from "./BlockButton";
-import {Toolbar} from './Toolbar/Toolbar';
-import {Leaf} from "./Leaf";
+import MarkButton from "./buttons/MarkButton/MarkButton";
+import BlockButton from "./buttons/BlockButton/BlockButton";
+import {Toolbar} from './bars/toolBar/Toolbar';
+import {Leaf} from "./leaves/Leaf";
 import {Element} from "./Element";
 import isHotkey from 'is-hotkey';
+import { PredictionBar } from './bars/predictionBar/PredictionBar';
+import { getCurrentWord, getNthWordBefore, getPreviousWord } from '../utils/utils';
+import axios from 'axios';
+import { BASE_URL } from '../config/baseUrl';
 
 const HOTKEYS = {
   'mod+b': 'bold',
   'mod+i': 'italic',
   'mod+u': 'underline',
   'mod+`': 'code',
+  'mod+1': 'prediction',
+  'mod+2': 'prediction',
+  'mod+3': 'prediction',
+  'mod+4': 'prediction',
+  'mod+5': 'prediction'
 };
 
 export const isMarkActive = (editor: Editor, format: string) => {
@@ -48,15 +57,60 @@ const ContentEditor = () => {
   const renderLeaf = useCallback((props: JSX.IntrinsicAttributes & { attributes: any; children: any; leaf: any; }) => <Leaf {...props} />, []);
   const editor = useMemo(() => withHistory(withReact(createEditor() as ReactEditor)), []);
 
+  const customInsertText = (text: string) => {
+    Editor.insertText(editor, text + " ");
+    ReactEditor.focus(editor);
+  };
+
+  const onPredictionClick = (event: SyntheticEvent) => {
+    const target = event.target as HTMLElement;
+    customInsertText(target.innerText);
+  };
+
+  const [currWord, setCurrWord] = useState("");
+  const [prevWord, setPrevWord] = useState("");
+  const [beforeWord, setBeforeWord] = useState("");
+  const [predictions, setPredictions] = useState([]);
+
+  useEffect(() => {
+    setPredictions([]);
+    if (currWord === "" && prevWord === " ") {
+      axios({
+        method: 'post',
+        url: BASE_URL + '/predict',
+        data: {
+          word: beforeWord
+        }
+      }).then((response) => setPredictions(response.data));
+    }
+  }, [beforeWord]);
+
   const [value, setValue] = useState<Descendant[]>([
     {
       type: 'paragraph',
-      children: [{ text: 'A line of text in a paragraph.' }],
+      children: [{ text: '\\lambda' }],
     },
   ]);
 
   return (
-    <Slate editor={editor} value={value} onChange={(newValue) => setValue(newValue)}>
+    <Slate editor={editor} value={value} onChange={(newValue) => {
+      setValue(newValue);
+      const { currentWord, currentRange } = getCurrentWord(editor);
+      const { word: previousWord } = getPreviousWord(
+        editor,
+        currentRange as BaseRange
+      );
+      const { word: beforeWord } = getNthWordBefore(
+        editor,
+        currentRange as BaseRange,
+        2
+      );
+
+      setCurrWord(currentWord as string);
+      setPrevWord(previousWord);
+      setBeforeWord(beforeWord);
+    }}
+    >
       <Toolbar className="toolbar">
         {/* TODO: make button generation in cycle (now it's rigid) */}
         <MarkButton format="bold" icon="format_bold" />
@@ -74,6 +128,7 @@ const ContentEditor = () => {
         <BlockButton format="right" icon="format_align_right" />
         <BlockButton format="justify" icon="format_align_justify" />
       </Toolbar>
+      <PredictionBar predictions={predictions} onClick={onPredictionClick}/>
       <Editable
           renderElement={renderElement}
           renderLeaf={renderLeaf}
@@ -86,7 +141,13 @@ const ContentEditor = () => {
                 event.preventDefault()
                 // @ts-ignore
                 const mark = HOTKEYS[hotkey];
-                toggleMark(editor, mark)
+                const hotkeyEnd = hotkey.slice(-1);
+                if ("12345".indexOf(hotkeyEnd) !== -1) {
+                  const prediction = predictions[parseInt(hotkeyEnd) - 1];
+                  if (prediction) customInsertText(prediction);
+                } else {
+                  toggleMark(editor, mark);
+                }
               }
             }
           }}
