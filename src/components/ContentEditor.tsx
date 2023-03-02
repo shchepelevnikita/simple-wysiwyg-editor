@@ -12,8 +12,10 @@ import { PredictionBar } from './bars/predictionBar/PredictionBar';
 import { getCurrentWord, getNthWordBefore, getPreviousWord } from '../utils/utils';
 import axios from 'axios';
 import { BASE_URL } from '../config/baseUrl';
+import { Hotkeys } from '../types/types';
+import { initialValue } from '../examples/example';
 
-const HOTKEYS = {
+const HOTKEYS: Hotkeys = {
   'mod+b': 'bold',
   'mod+i': 'italic',
   'mod+u': 'underline',
@@ -26,8 +28,8 @@ const HOTKEYS = {
 };
 
 export const isMarkActive = (editor: Editor, format: string) => {
-  const marks = Editor.marks(editor);
-  // @ts-ignore
+  const marks: any = Editor.marks(editor);
+  
   return marks ? marks[format] === true : false;
 }
 
@@ -53,6 +55,11 @@ declare module 'slate' {
 }
 
 const ContentEditor = () => {
+  const saveInLocalStorage = (value: Descendant[]) => {
+    const content = JSON.stringify(value);
+    localStorage.setItem('content', content);
+  }
+
   const renderElement = useCallback((props: JSX.IntrinsicAttributes & { attributes: any; children: any; element: any; }) => <Element {...props} />, []);
   const renderLeaf = useCallback((props: JSX.IntrinsicAttributes & { attributes: any; children: any; leaf: any; }) => <Leaf {...props} />, []);
   const editor = useMemo(() => withHistory(withReact(createEditor() as ReactEditor)), []);
@@ -85,34 +92,51 @@ const ContentEditor = () => {
     }
   }, [beforeWord]);
 
-  const [value, setValue] = useState<Descendant[]>([
-    {
-      type: 'paragraph',
-      children: [{ text: '\\lambda' }],
-    },
-  ]);
+  const content = localStorage.getItem('content');
+
+  const [value, setValue] = useState<Descendant[]>(content ? JSON.parse(content) : initialValue);
+
+  const onValueChange = (newValue: Descendant[]) => {
+    setValue(newValue);
+    saveInLocalStorage(newValue);
+
+    const { currentWord, currentRange } = getCurrentWord(editor);
+    const { word: previousWord } = getPreviousWord(
+      editor,
+      currentRange as BaseRange
+    );
+    const { word: beforeWord } = getNthWordBefore(
+      editor,
+      currentRange as BaseRange,
+      2
+    );
+
+    setCurrWord(currentWord as string);
+    setPrevWord(previousWord);
+    setBeforeWord(beforeWord);
+  };
+
+  const onKeyDown = (event: SyntheticEvent) => {
+    for (const hotkey in HOTKEYS) {
+      if (isHotkey(hotkey, event as any)) {
+        event.preventDefault()
+
+        const mark = HOTKEYS[hotkey];
+        const hotkeyEnd = hotkey.slice(-1);
+        if ("12345".indexOf(hotkeyEnd) !== -1) {
+          const prediction = predictions[parseInt(hotkeyEnd) - 1];
+          if (prediction) customInsertText(prediction);
+        } else {
+          toggleMark(editor, mark);
+        }
+      }
+    }
+  };
 
   return (
-    <Slate editor={editor} value={value} onChange={(newValue) => {
-      setValue(newValue);
-      const { currentWord, currentRange } = getCurrentWord(editor);
-      const { word: previousWord } = getPreviousWord(
-        editor,
-        currentRange as BaseRange
-      );
-      const { word: beforeWord } = getNthWordBefore(
-        editor,
-        currentRange as BaseRange,
-        2
-      );
-
-      setCurrWord(currentWord as string);
-      setPrevWord(previousWord);
-      setBeforeWord(beforeWord);
-    }}
+    <Slate editor={editor} value={value} onChange={onValueChange}
     >
       <Toolbar className="toolbar">
-        {/* TODO: make button generation in cycle (now it's rigid) */}
         <MarkButton format="bold" icon="format_bold" />
         <MarkButton format="italic" icon="format_italic" />
         <MarkButton format="underline" icon="format_underlined" />
@@ -135,22 +159,7 @@ const ContentEditor = () => {
           placeholder="Enter some rich text…"
           spellCheck
           autoFocus
-          onKeyDown={event => {
-            for (const hotkey in HOTKEYS) {
-              if (isHotkey(hotkey, event as any)) {
-                event.preventDefault()
-                // @ts-ignore
-                const mark = HOTKEYS[hotkey];
-                const hotkeyEnd = hotkey.slice(-1);
-                if ("12345".indexOf(hotkeyEnd) !== -1) {
-                  const prediction = predictions[parseInt(hotkeyEnd) - 1];
-                  if (prediction) customInsertText(prediction);
-                } else {
-                  toggleMark(editor, mark);
-                }
-              }
-            }
-          }}
+          onKeyDown={onKeyDown}
       />
     </Slate>
   );

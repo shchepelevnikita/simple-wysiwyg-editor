@@ -29,3 +29,7 @@ export type MenuProps = BaseProps & PropsWithChildren;
 export type PredictionProps = BaseProps & {
     predictions: string[];
 };
+
+export type Hotkeys = {
+    [key: string]: string;
+}
