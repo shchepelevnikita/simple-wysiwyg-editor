@@ -19,9 +19,5 @@ export const Leaf = ({ attributes, children, leaf }) => {
         children = <u>{children}</u>
     }
 
-    if (leaf.inlineMath) {
-        children = <InlineMath>\int_0^\infty x^2 dx</InlineMath>
-    }
-
     return <span {...attributes}>{children}</span>
 };
