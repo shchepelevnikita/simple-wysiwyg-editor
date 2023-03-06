@@ -1,10 +1,10 @@
 .button {
-    outline: none;
-    border: none;
-    color: lightgrey;
-    background: transparent;
+  outline: none;
+  border: none;
+  color: lightgrey;
+  background: transparent;
 }
 
 .button.active {
-    color: black;
+  color: black;
 }

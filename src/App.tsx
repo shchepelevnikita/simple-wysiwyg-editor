@@ -1,11 +1,12 @@
-import ContentEditor from "./components/ContentEditor";
+import type { ReactElement } from 'react';
+import ContentEditor from './components/ContentEditor';
 
-function App() {
+const App = (): ReactElement => {
   return (
     <div className="App">
       <ContentEditor />
     </div>
   );
-}
+};
 
 export default App;

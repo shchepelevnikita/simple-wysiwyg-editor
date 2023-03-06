@@ -1,10 +1,6 @@
-import React from "react";
-import {IconProps} from "../../../types/types";
+import React from 'react';
+import { type IconProps } from '../../../types/types';
 
-export const Icon = ({children}: IconProps) => {
-  return (
-    <span className="material-icons">
-      {children}
-    </span>
-  );
+export const Icon = ({ children }: IconProps): React.ReactElement => {
+  return <span className="material-icons">{children}</span>;
 };

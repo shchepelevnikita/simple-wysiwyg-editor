@@ -1,83 +1,64 @@
-// @ts-nocheck
-
-import {useSlate} from "slate-react";
-import {Editor, Transforms, Element as SlateElement} from "slate";
-import {Button} from "../Button/Button";
-import {Icon} from "../../icons/Icon/Icon";
+import { useSlate } from 'slate-react';
+import { Editor, Transforms, Element as SlateElement } from 'slate';
+import { Button } from '../Button/Button';
+import { Icon } from '../../icons/Icon/Icon';
+import { isBlockActive } from '../../../utils/utils';
+import { type BlockButtonProps } from '../../../types/types';
 
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify'];
 
-const isBlockActive = (editor: Editor, format: any, blockType = 'type') => {
-    const { selection } = editor
-    if (!selection) return false
+const toggleBlock = (editor: Editor, format: string): void => {
+  const isActive = isBlockActive(
+    editor,
+    format,
+    TEXT_ALIGN_TYPES.includes(format) ? 'align' : 'type'
+  );
+  const isList = LIST_TYPES.includes(format);
 
-    const [match] = Array.from(
-        Editor.nodes(editor, {
-            at: Editor.unhangRange(editor, selection),
-            match: n =>
-                !Editor.isEditor(n) &&
-                SlateElement.isElement(n) &&
-                n[blockType] === format,
-        })
-    )
+  Transforms.unwrapNodes(editor, {
+    match: (n) =>
+      !Editor.isEditor(n) &&
+      SlateElement.isElement(n) &&
+      LIST_TYPES.includes(n.type) &&
+      !TEXT_ALIGN_TYPES.includes(format),
+    split: true
+  });
 
-    return !!match
-}
+  let newProperties: Partial<SlateElement>;
 
-const toggleBlock = (editor: Editor, format: string) => {
-    const isActive = isBlockActive(
-        editor,
-        format,
-        TEXT_ALIGN_TYPES.includes(format as string) ? 'align' : 'type'
-    )
-    const isList = LIST_TYPES.includes(format as string)
+  if (TEXT_ALIGN_TYPES.includes(format)) {
+    newProperties = {
+      align: isActive ? undefined : format
+    };
+  } else {
+    newProperties = {
+      type: isActive ? 'paragraph' : isList ? 'list-item' : format
+    };
+  }
 
-    Transforms.unwrapNodes(editor, {
-        match: n =>
-            !Editor.isEditor(n) &&
-            SlateElement.isElement(n) &&
-            LIST_TYPES.includes(n.type) &&
-            !TEXT_ALIGN_TYPES.includes(format),
-        split: true,
-    })
-    let newProperties: Partial<SlateElement>
-    if (TEXT_ALIGN_TYPES.includes(format)) {
-        newProperties = {
-            align: isActive ? undefined : format,
-        }
-    } else {
-        newProperties = {
-            // @ts-ignore
-            type: isActive ? 'paragraph' : isList ? 'list-item' : format,
-        }
-    }
-    Transforms.setNodes<SlateElement>(editor, newProperties)
+  Transforms.setNodes<SlateElement>(editor, newProperties);
 
-    if (!isActive && isList) {
-        const block = { type: format, children: [] }
-        Transforms.wrapNodes(editor, block)
-    }
-}
+  if (!isActive && isList) {
+    const block = { type: format, children: [] };
+    Transforms.wrapNodes(editor, block);
+  }
+};
 
-const BlockButton = ({ format, icon }) => {
-    const editor = useSlate();
-    return (
-        <Button
-            className="button mark-button"
-            active={isBlockActive(
-                editor,
-                format,
-                TEXT_ALIGN_TYPES.includes(format) ? 'align' : 'type'
-            )}
-            onClick={(event) => {
-                event.preventDefault();
-                toggleBlock(editor, format);
-            }}
-        >
-            <Icon>{icon}</Icon>
-        </Button>
-    )
-}
+const BlockButton = ({ format, icon }: BlockButtonProps): React.ReactElement => {
+  const editor = useSlate();
+
+  return (
+    <Button
+      className="button mark-button"
+      active={isBlockActive(editor, format, TEXT_ALIGN_TYPES.includes(format) ? 'align' : 'type')}
+      onClick={(event) => {
+        event.preventDefault();
+        toggleBlock(editor, format);
+      }}>
+      <Icon>{icon}</Icon>
+    </Button>
+  );
+};
 
 export default BlockButton;
