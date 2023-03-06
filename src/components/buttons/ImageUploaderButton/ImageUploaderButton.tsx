@@ -4,7 +4,6 @@ import { ImageUploader } from '../../../services/ImageUploader';
 import { type ImageButtonProps } from '../../../types/types';
 import { insertImage, isBlockActive } from '../../../utils/utils';
 import { Icon } from '../../icons/Icon/Icon';
-import { Button } from '../Button/Button';
 
 export const ImageUploaderButton = ({ icon }: ImageButtonProps): React.ReactElement => {
   const editor = useSlate();
@@ -35,7 +34,11 @@ export const ImageUploaderButton = ({ icon }: ImageButtonProps): React.ReactElem
   };
 
   return (
-    <Button onClick={onImageButtonMouseDown} className="button mark-button">
+    <div
+      onMouseDown={onImageButtonMouseDown}
+      className="button mark-button"
+      style={getButtonStyle(isButtonEnabled)}
+    >
       <Icon>{icon}</Icon>
       <input
         id="file-upload"
@@ -45,6 +48,11 @@ export const ImageUploaderButton = ({ icon }: ImageButtonProps): React.ReactElem
         onChange={uploadImage}
         style={{ display: 'none' }}
       />
-    </Button>
+    </div>
   );
 };
+
+const getButtonStyle = (isButtonEnabled: boolean) => ({
+  cursor: isButtonEnabled ? 'pointer' : 'arrow',
+  padding: '0 10px'
+});

@@ -1,5 +1,6 @@
 import { BlockMath } from 'react-katex';
 import { type RenderElementProps } from 'slate-react';
+import { ImageElement } from './ImageElement';
 
 export const Element = ({
   attributes,
@@ -17,6 +18,12 @@ export const Element = ({
       return <h2 {...attributes}>{children}</h2>;
     case 'list-item':
       return <li {...attributes}>{children}</li>;
+    case 'image':
+      return (
+        <ImageElement attributes={attributes} element={element}>
+          {children}
+        </ImageElement>
+      );
     case 'numbered-list':
       return <ol {...attributes}>{children}</ol>;
     case 'block-math':
