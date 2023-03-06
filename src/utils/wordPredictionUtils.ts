@@ -85,7 +85,19 @@ export const getCurrentWord = (editor: ReactEditor): getCurrentWordFunctionRetur
     };
   }
 
-  return {};
+  return {
+    currentWord: '',
+    currentRange: {
+      anchor: {
+        path: [],
+        offset: 0
+      },
+      focus: {
+        path: [],
+        offset: 0
+      }
+    }
+  };
 };
 
 // get the word one before the current cursor

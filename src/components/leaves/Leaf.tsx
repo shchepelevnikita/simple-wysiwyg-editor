@@ -1,19 +1,19 @@
 import { type RenderLeafProps } from 'slate-react';
 
 export const Leaf = ({ attributes, children, leaf }: RenderLeafProps): React.ReactElement => {
-  if (leaf.bold ?? true) {
+  if (leaf.bold) {
     children = <strong>{children}</strong>;
   }
 
-  if (leaf.code ?? true) {
+  if (leaf.code) {
     children = <code>{children}</code>;
   }
 
-  if (leaf.italic ?? true) {
+  if (leaf.italic) {
     children = <em>{children}</em>;
   }
 
-  if (leaf.underline ?? true) {
+  if (leaf.underline) {
     children = <u>{children}</u>;
   }
 

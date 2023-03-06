@@ -18,11 +18,10 @@ export interface getCurrentWordFunctionReturnType {
 }
 
 export type getPreviousWordFunctionReturnType =
-  | {
+  {
       word: string;
       range: Range;
-    }
-  | Record<string, unknown>;
+    };
 
 export interface PropsWithChildren {
   children: ReactNode;
