@@ -80,7 +80,8 @@ export const ImageElement = ({
           minWidth={minDiagonal * Math.cos(theta)}
           minHeight={minDiagonal * Math.sin(theta)}
           maxWidth={maxDiagonal * Math.cos(theta)}
-          maxHeight={maxDiagonal * Math.sin(theta)}>
+          maxHeight={maxDiagonal * Math.sin(theta)}
+        >
           <img
             ref={imgRef}
             src={element.base64 as string}

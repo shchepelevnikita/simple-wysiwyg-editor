@@ -13,7 +13,8 @@ const MarkButton = ({ format, icon }: MarkButtonProps): React.ReactElement => {
       onClick={(event) => {
         event.preventDefault();
         toggleMark(editor, format);
-      }}>
+      }}
+    >
       <Icon>{icon}</Icon>
     </Button>
   );

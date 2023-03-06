@@ -55,7 +55,8 @@ const BlockButton = ({ format, icon }: BlockButtonProps): React.ReactElement => 
       onClick={(event) => {
         event.preventDefault();
         toggleBlock(editor, format);
-      }}>
+      }}
+    >
       <Icon>{icon}</Icon>
     </Button>
   );

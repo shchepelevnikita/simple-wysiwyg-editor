@@ -17,11 +17,10 @@ export interface getCurrentWordFunctionReturnType {
   currentRange: Range;
 }
 
-export type getPreviousWordFunctionReturnType =
-  {
-      word: string;
-      range: Range;
-    };
+export type getPreviousWordFunctionReturnType = {
+  word: string;
+  range: Range;
+};
 
 export interface PropsWithChildren {
   children: ReactNode;
