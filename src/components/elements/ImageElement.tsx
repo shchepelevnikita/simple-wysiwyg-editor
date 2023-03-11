@@ -18,6 +18,7 @@ export const ImageElement = ({
 }: RenderElementProps): React.ReactElement => {
   const selected = useSelected();
   const focused = useFocused();
+
   const editor = useSlate();
 
   const [width, setWidth] = useState<number>((element.width as number) || 200);
