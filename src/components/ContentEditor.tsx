@@ -135,6 +135,8 @@ const ContentEditor = (): JSX.Element => {
     }
   };
 
+  console.log(value);
+
   return (
     <Slate editor={editor} value={value} onChange={onValueChange}>
       <Toolbar className="toolbar">

@@ -42,6 +42,11 @@ export const initialValue = [
   },
   {
     type: 'paragraph',
+    align: 'center',
+    children: [{ text: 'Try it out for yourself!' }]
+  },
+  {
+    type: 'paragraph',
     children: [
       {
         text: "It's not a regular WYSIWYG editor, because it accepts math elements using "

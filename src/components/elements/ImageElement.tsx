@@ -9,6 +9,7 @@ import {
 import { type Path, Transforms } from 'slate';
 import { Resizable, type NumberSize } from 're-resizable';
 import { type Direction } from 're-resizable/lib/resizer';
+import { type Align } from '../../types/types';
 
 export const ImageElement = ({
   attributes,
@@ -71,7 +72,7 @@ export const ImageElement = ({
 
   return (
     <div {...attributes}>
-      <div contentEditable={false} style={getResizableStyle()}>
+      <div contentEditable={false} style={getResizableStyle(element.align)}>
         <Resizable
           size={{ width, height }}
           onResizeStart={onResizeStart}
@@ -80,8 +81,7 @@ export const ImageElement = ({
           minWidth={minDiagonal * Math.cos(theta)}
           minHeight={minDiagonal * Math.sin(theta)}
           maxWidth={maxDiagonal * Math.cos(theta)}
-          maxHeight={maxDiagonal * Math.sin(theta)}
-        >
+          maxHeight={maxDiagonal * Math.sin(theta)}>
           <img
             ref={imgRef}
             src={element.base64 as string}
@@ -101,10 +101,10 @@ const maxDiagonal = 700;
 
 const isRefDiagonalSmallerThanMinimum = (refDiagonal: number): boolean => refDiagonal < minDiagonal;
 
-const getResizableStyle = (): React.CSSProperties => ({
+const getResizableStyle = (align: Align | undefined): React.CSSProperties => ({
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'center'
+  justifyContent: align
 });
 
 const getImgStyle = (selected: boolean, focused: boolean): React.CSSProperties => ({

@@ -17,10 +17,10 @@ export interface getCurrentWordFunctionReturnType {
   currentRange: Range;
 }
 
-export type getPreviousWordFunctionReturnType = {
+export interface getPreviousWordFunctionReturnType {
   word: string;
   range: Range;
-};
+}
 
 export interface PropsWithChildren {
   children: ReactNode;
@@ -53,18 +53,23 @@ export type PredictionProps = BaseProps & {
 
 export type CustomEditor = BaseEditor & ReactEditor;
 
+export type Align = 'start' | 'end' | 'left' | 'right' | 'center' | 'justify' | 'match-parent';
+
 export interface ParagraphElement {
   type: 'paragraph';
+  align?: Align;
   children: CustomText[];
 }
 
 export interface HeadingElement {
   type: 'heading';
+  align?: Align;
   level: number;
   children: CustomText[];
 }
 
 export interface TextElement {
+  align?: Align;
   type: string;
   children: CustomText[];
 }

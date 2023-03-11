@@ -37,8 +37,7 @@ export const ImageUploaderButton = ({ icon }: ImageButtonProps): React.ReactElem
     <div
       onMouseDown={onImageButtonMouseDown}
       className="button mark-button"
-      style={getButtonStyle(isButtonEnabled)}
-    >
+      style={getButtonStyle(isButtonEnabled)}>
       <Icon>{icon}</Icon>
       <input
         id="file-upload"
@@ -52,7 +51,7 @@ export const ImageUploaderButton = ({ icon }: ImageButtonProps): React.ReactElem
   );
 };
 
-const getButtonStyle = (isButtonEnabled: boolean) => ({
+const getButtonStyle = (isButtonEnabled: boolean): React.CSSProperties => ({
   cursor: isButtonEnabled ? 'pointer' : 'arrow',
   padding: '0 10px'
 });

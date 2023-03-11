@@ -7,17 +7,38 @@ export const Element = ({
   children,
   element
 }: RenderElementProps): React.ReactElement => {
+  const style: React.CSSProperties = { textAlign: element.align };
   switch (element.type) {
     case 'block-quote':
-      return <blockquote {...attributes}>{children}</blockquote>;
+      return (
+        <blockquote {...attributes} style={style}>
+          {children}
+        </blockquote>
+      );
     case 'bulleted-list':
-      return <ul {...attributes}>{children}</ul>;
+      return (
+        <ul {...attributes} style={style}>
+          {children}
+        </ul>
+      );
     case 'heading-one':
-      return <h1 {...attributes}>{children}</h1>;
+      return (
+        <h1 {...attributes} style={style}>
+          {children}
+        </h1>
+      );
     case 'heading-two':
-      return <h2 {...attributes}>{children}</h2>;
+      return (
+        <h2 {...attributes} style={style}>
+          {children}
+        </h2>
+      );
     case 'list-item':
-      return <li {...attributes}>{children}</li>;
+      return (
+        <li {...attributes} style={style}>
+          {children}
+        </li>
+      );
     case 'image':
       return (
         <ImageElement attributes={attributes} element={element}>
@@ -25,10 +46,22 @@ export const Element = ({
         </ImageElement>
       );
     case 'numbered-list':
-      return <ol {...attributes}>{children}</ol>;
+      return (
+        <ol {...attributes} style={style}>
+          {children}
+        </ol>
+      );
     case 'block-math':
-      return <BlockMath {...attributes}>{children}</BlockMath>;
+      return (
+        <BlockMath {...attributes} style={style}>
+          {children}
+        </BlockMath>
+      );
     default:
-      return <p {...attributes}>{children}</p>;
+      return (
+        <p {...attributes} style={style}>
+          {children}
+        </p>
+      );
   }
 };
