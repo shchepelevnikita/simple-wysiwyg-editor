@@ -23,6 +23,7 @@
     "@typescript-eslint/indent": "off",
     "@typescript-eslint/strict-boolean-expressions": "off",
     "@typescript-eslint/space-before-function-paren": "off",
+    "@typescript-eslint/restrict-plus-operands": "off",
     "no-undef": "off"
   }
 }
