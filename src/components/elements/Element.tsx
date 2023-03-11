@@ -1,4 +1,3 @@
-import { BlockMath } from 'react-katex';
 import { type RenderElementProps } from 'slate-react';
 import { ImageElement } from './ImageElement';
 
