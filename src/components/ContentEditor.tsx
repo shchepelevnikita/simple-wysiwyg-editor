@@ -22,6 +22,9 @@ import { BASE_URL } from '../config/baseUrl';
 import { initialValue } from '../examples/example';
 import { type StringIndexable } from '../types/types';
 import { ImageUploaderButton } from './buttons/ImageUploaderButton/ImageUploaderButton';
+import { MathJaxContext } from 'better-react-mathjax';
+import { EDITOR_MATH_JAX_CONFIG } from '../config/mathJax';
+import { withAllPlugins } from '../plugins/withAllPlugins';
 
 const HOTKEYS: StringIndexable = {
   'mod+b': 'bold',
@@ -65,7 +68,8 @@ const ContentEditor = (): JSX.Element => {
     (props: JSX.IntrinsicAttributes & RenderLeafProps) => <Leaf {...props} />,
     []
   );
-  const editor = useMemo(() => withHistory(withReact(createEditor() as ReactEditor)), []);
+
+  const editor = useMemo(() => withAllPlugins(withHistory(withReact(createEditor()))), []);
 
   const customInsertText = (text: string): void => {
     Editor.insertText(editor, text + ' ');
@@ -142,7 +146,7 @@ const ContentEditor = (): JSX.Element => {
         <MarkButton format="italic" icon="format_italic" />
         <MarkButton format="underline" icon="format_underlined" />
         <MarkButton format="code" icon="code" />
-        <MarkButton format="inlineMath" icon="functions" />
+        <BlockButton format="math" icon="functions" />
         <BlockButton format="heading-one" icon="looks_one" />
         <BlockButton format="heading-two" icon="looks_two" />
         <BlockButton format="block-quote" icon="format_quote" />
@@ -155,14 +159,16 @@ const ContentEditor = (): JSX.Element => {
         <ImageUploaderButton format="image" icon="image" />
       </Toolbar>
       <PredictionBar predictions={predictions} onClick={onPredictionClick} />
-      <Editable
-        renderElement={renderElement}
-        renderLeaf={renderLeaf}
-        placeholder="Enter some rich text…"
-        spellCheck
-        autoFocus
-        onKeyDown={onKeyDown}
-      />
+      <MathJaxContext version={3} config={EDITOR_MATH_JAX_CONFIG}>
+        <Editable
+          renderElement={renderElement}
+          renderLeaf={renderLeaf}
+          placeholder="Enter some rich text…"
+          spellCheck
+          autoFocus
+          onKeyDown={onKeyDown}
+        />
+      </MathJaxContext>
     </Slate>
   );
 };

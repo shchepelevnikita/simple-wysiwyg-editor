@@ -1,5 +1,7 @@
 import { type RenderElementProps } from 'slate-react';
 import { ImageElement } from './ImageElement';
+import { InlineMathElement } from './InlineMathElement';
+import { MathElement } from './MathElement';
 
 import './style.css';
 
@@ -52,11 +54,17 @@ export const Element = ({
           {children}
         </ol>
       );
-    case 'block-math':
+    case 'inlineMath':
       return (
-        <BlockMath {...attributes} style={style}>
+        <InlineMathElement attributes={attributes} element={element}>
           {children}
-        </BlockMath>
+        </InlineMathElement>
+      );
+    case 'math':
+      return (
+        <MathElement attributes={attributes} element={element}>
+          {children}
+        </MathElement>
       );
     default:
       return (

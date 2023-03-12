@@ -7,6 +7,10 @@ export type Indexable = Record<string, unknown>;
 
 export type StringIndexable = Record<string, string>;
 
+export interface MathViewProps {
+  mathString: string;
+}
+
 export type BaseProps = Indexable & {
   className?: string;
   onClick?: (event: SyntheticEvent) => void;
@@ -55,26 +59,41 @@ export type CustomEditor = BaseEditor & ReactEditor;
 
 export type Align = 'start' | 'end' | 'left' | 'right' | 'center' | 'justify' | 'match-parent';
 
-export interface ParagraphElement {
+export interface BaseElement {
+  align?: Align;
+  content?: string;
+  children: CustomText[];
+}
+
+export interface ParagraphElement extends BaseElement {
   type: 'paragraph';
-  align?: Align;
-  children: CustomText[];
 }
 
-export interface HeadingElement {
+export interface HeadingElement extends BaseElement {
   type: 'heading';
-  align?: Align;
   level: number;
-  children: CustomText[];
 }
 
-export interface TextElement {
-  align?: Align;
+export interface TextElement extends BaseElement {
   type: string;
-  children: CustomText[];
 }
 
-export type CustomElement = (ParagraphElement | HeadingElement | TextElement) & Indexable;
+export interface InlineMathElement extends BaseElement {
+  type: 'inlineMath';
+}
+
+export interface MathElement extends BaseElement {
+  type: 'math';
+}
+
+export type CustomElement = (
+  | ParagraphElement
+  | HeadingElement
+  | TextElement
+  | MathElement
+  | InlineMathElement
+) &
+  Indexable;
 
 export interface FormattedText {
   text: string;
