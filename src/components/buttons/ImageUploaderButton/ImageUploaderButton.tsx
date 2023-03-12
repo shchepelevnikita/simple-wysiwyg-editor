@@ -19,7 +19,7 @@ export const ImageUploaderButton = ({ icon }: ImageButtonProps): React.ReactElem
         insertImage(editor, base64);
       },
       (error) => {
-        console.log(error);
+        console.error(error);
       }
     );
   };
