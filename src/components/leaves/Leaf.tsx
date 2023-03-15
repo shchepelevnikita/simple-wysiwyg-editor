@@ -1,23 +1,27 @@
-import { InlineMath } from 'react-katex';
+import { type RenderLeafProps } from 'slate-react';
 
-// @ts-ignore
-// TODO: write interface, do something with if clauses
-export const Leaf = ({ attributes, children, leaf }) => {
-    if (leaf.bold) {
-        children = <strong>{children}</strong>
-    }
+export const Leaf = ({ attributes, children, leaf }: RenderLeafProps): React.ReactElement => {
+  const { text, ...rest } = leaf;
 
-    if (leaf.code) {
-        children = <code>{children}</code>
-    }
+  if (leaf.bold) {
+    children = <strong>{children}</strong>;
+  }
 
-    if (leaf.italic) {
-        children = <em>{children}</em>
-    }
+  if (leaf.code) {
+    children = <code>{children}</code>;
+  }
 
-    if (leaf.underline) {
-        children = <u>{children}</u>
-    }
+  if (leaf.italic) {
+    children = <em>{children}</em>;
+  }
 
-    return <span {...attributes}>{children}</span>
+  if (leaf.underline) {
+    children = <u>{children}</u>;
+  }
+
+  return (
+    <span {...attributes} className={Object.keys(rest).join(' ')}>
+      {children}
+    </span>
+  );
 };
