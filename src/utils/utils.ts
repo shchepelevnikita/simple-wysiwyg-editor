@@ -17,3 +17,6 @@ export const isBlockActive = (editor: Editor, format: any, blockType = 'type'): 
 export const insertImage = (editor: Editor, base64: unknown): void => {
   Transforms.setNodes(editor, { type: 'image', base64 });
 };
+
+export const toCodeLines = (content: string): SlateElement[] =>
+  content.split('\n').map((line) => ({ type: 'code-line', children: [{ text: line }] }));

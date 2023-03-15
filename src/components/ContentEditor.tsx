@@ -1,5 +1,5 @@
 import React, { type SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import { createEditor, type Descendant, Editor } from 'slate';
+import { createEditor, type Descendant, Editor, Transforms, Element as SlateElement } from 'slate';
 import {
   Slate,
   Editable,
@@ -20,17 +20,23 @@ import { getCurrentWord, getNthWordBefore, getPreviousWord } from '../utils/word
 import axios from 'axios';
 import { BASE_URL } from '../config/baseUrl';
 import { initialValue } from '../examples/example';
-import { type StringIndexable } from '../types/types';
+import { type Align, type StringIndexable } from '../types/types';
 import { ImageUploaderButton } from './buttons/ImageUploaderButton/ImageUploaderButton';
 import { MathJaxContext } from 'better-react-mathjax';
 import { EDITOR_MATH_JAX_CONFIG } from '../config/mathJax';
 import { withAllPlugins } from '../plugins/withAllPlugins';
+import { useDecorate } from '../hooks/useDecorate';
+import { SetNodeToDecorations } from '../utils/codeBlockUtils';
+
+import './style.css';
+import { isBlockActive } from '../utils/utils';
+import { LIST_TYPES, TEXT_ALIGN_TYPES } from '../config/const';
 
 const HOTKEYS: StringIndexable = {
   'mod+b': 'bold',
   'mod+i': 'italic',
   'mod+u': 'underline',
-  'mod+`': 'code',
+  'mod+`': 'code-line',
   'mod+1': 'prediction',
   'mod+2': 'prediction',
   'mod+3': 'prediction',
@@ -86,6 +92,8 @@ const ContentEditor = (): JSX.Element => {
   const [beforeWord, setBeforeWord] = useState('');
   const [predictions, setPredictions] = useState([]);
 
+  const decorate = useDecorate(editor);
+
   useEffect(() => {
     setPredictions([]);
     if (currWord === '' && prevWord === ' ') {
@@ -139,28 +147,92 @@ const ContentEditor = (): JSX.Element => {
     }
   };
 
+  const onBlockButtonClick = (editor: Editor, format: string): void => {
+    const isActive = isBlockActive(
+      editor,
+      format,
+      TEXT_ALIGN_TYPES.includes(format as Align) ? 'align' : 'type'
+    );
+    const isList = LIST_TYPES.includes(format);
+
+    Transforms.unwrapNodes(editor, {
+      match: (n) =>
+        !Editor.isEditor(n) &&
+        SlateElement.isElement(n) &&
+        LIST_TYPES.includes(n.type) &&
+        !TEXT_ALIGN_TYPES.includes(format as Align),
+      split: true
+    });
+
+    let newProperties: Partial<SlateElement>;
+
+    if (TEXT_ALIGN_TYPES.includes(format as Align)) {
+      newProperties = {
+        align: isActive ? undefined : (format as Align)
+      };
+    } else {
+      newProperties = {
+        type: isActive ? 'paragraph' : isList ? 'list-item' : format
+      };
+    }
+
+    Transforms.setNodes<SlateElement>(editor, newProperties);
+
+    if (!isActive && isList) {
+      const block = { type: format, children: [] };
+      Transforms.wrapNodes(editor, block);
+    }
+  };
+
+  const onCodeBlockButtonClick = (): void => {
+    Transforms.wrapNodes(
+      editor,
+      { type: 'code-block', language: 'html', children: [] },
+      {
+        match: (n) => SlateElement.isElement(n) && n.type === 'paragraph',
+        split: true
+      }
+    );
+    Transforms.setNodes(
+      editor,
+      { type: 'code-line' },
+      { match: (n) => SlateElement.isElement(n) && n.type === 'paragraph' }
+    );
+  };
+
   return (
     <Slate editor={editor} value={value} onChange={onValueChange}>
       <Toolbar className="toolbar">
         <MarkButton format="bold" icon="format_bold" />
         <MarkButton format="italic" icon="format_italic" />
         <MarkButton format="underline" icon="format_underlined" />
-        <MarkButton format="code" icon="code" />
-        <BlockButton format="math" icon="functions" />
-        <BlockButton format="heading-one" icon="looks_one" />
-        <BlockButton format="heading-two" icon="looks_two" />
-        <BlockButton format="block-quote" icon="format_quote" />
-        <BlockButton format="numbered-list" icon="format_list_numbered" />
-        <BlockButton format="bulleted-list" icon="format_list_bulleted" />
-        <BlockButton format="left" icon="format_align_left" />
-        <BlockButton format="center" icon="format_align_center" />
-        <BlockButton format="right" icon="format_align_right" />
-        <BlockButton format="justify" icon="format_align_justify" />
+        <MarkButton format="code" icon="integration_instructions" />
+        <BlockButton format="code-block" icon="code" onClick={onCodeBlockButtonClick} />
+        <BlockButton format="math" icon="functions" onClick={onBlockButtonClick} />
+        <BlockButton format="heading-one" icon="looks_one" onClick={onBlockButtonClick} />
+        <BlockButton format="heading-two" icon="looks_two" onClick={onBlockButtonClick} />
+        <BlockButton format="block-quote" icon="format_quote" onClick={onBlockButtonClick} />
+        <BlockButton
+          format="numbered-list"
+          icon="format_list_numbered"
+          onClick={onBlockButtonClick}
+        />
+        <BlockButton
+          format="bulleted-list"
+          icon="format_list_bulleted"
+          onClick={onBlockButtonClick}
+        />
+        <BlockButton format="left" icon="format_align_left" onClick={onBlockButtonClick} />
+        <BlockButton format="center" icon="format_align_center" onClick={onBlockButtonClick} />
+        <BlockButton format="right" icon="format_align_right" onClick={onBlockButtonClick} />
+        <BlockButton format="justify" icon="format_align_justify" onClick={onBlockButtonClick} />
         <ImageUploaderButton format="image" icon="image" />
       </Toolbar>
       <PredictionBar predictions={predictions} onClick={onPredictionClick} />
+      <SetNodeToDecorations />
       <MathJaxContext version={3} config={EDITOR_MATH_JAX_CONFIG}>
         <Editable
+          decorate={decorate}
           renderElement={renderElement}
           renderLeaf={renderLeaf}
           placeholder="Enter some rich text…"

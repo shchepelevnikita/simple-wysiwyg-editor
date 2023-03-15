@@ -1,4 +1,5 @@
 import { type RenderElementProps } from 'slate-react';
+import { CodeElement } from './CodeElement/CodeElement';
 import { ImageElement } from './ImageElement';
 import { InlineMathElement } from './InlineMathElement';
 import { MathElement } from './MathElement';
@@ -65,6 +66,18 @@ export const Element = ({
         <MathElement attributes={attributes} element={element}>
           {children}
         </MathElement>
+      );
+    case 'code-block':
+      return (
+        <CodeElement attributes={attributes} element={element}>
+          {children}
+        </CodeElement>
+      );
+    case 'code-line':
+      return (
+        <div {...attributes} style={{ position: 'relative' }}>
+          {children}
+        </div>
       );
     default:
       return (

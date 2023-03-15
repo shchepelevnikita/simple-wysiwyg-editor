@@ -22,7 +22,7 @@ export const MathElement = ({
   const editor = useSlate();
 
   useEffect(() => {
-    setMathString(element.children[0].text || '');
+    setMathString((element.children[0].text as string) || '');
   }, [element.children]);
 
   function onMathClick(): void {

@@ -1,6 +1,6 @@
 import { type ReactNode, type SyntheticEvent } from 'react';
 import type React from 'react';
-import { type BaseEditor, type Range } from 'slate';
+import { type Editor, type BaseEditor, type Range, type BaseRange, type Descendant } from 'slate';
 import { type ReactEditor } from 'slate-react';
 
 export type Indexable = Record<string, unknown>;
@@ -41,7 +41,9 @@ export interface MarkButtonProps {
   icon: string;
 }
 
-export type BlockButtonProps = MarkButtonProps;
+export type BlockButtonProps = MarkButtonProps & {
+  onClick: (editor: Editor, format: string) => void;
+};
 
 export type ImageButtonProps = MarkButtonProps;
 
@@ -55,14 +57,26 @@ export type PredictionProps = BaseProps & {
   predictions: string[];
 };
 
-export type CustomEditor = BaseEditor & ReactEditor;
+export type CustomEditor = BaseEditor &
+  ReactEditor & {
+    nodeToDecorations?: Map<CustomElement, Range[]>;
+  };
 
 export type Align = 'start' | 'end' | 'left' | 'right' | 'center' | 'justify' | 'match-parent';
 
 export interface BaseElement {
   align?: Align;
   content?: string;
-  children: CustomText[];
+  language?: string;
+  children: Descendant[];
+}
+
+export interface CodeBlockElement extends BaseElement {
+  type: 'code-block';
+}
+
+export interface CodeLineElement extends BaseElement {
+  type: 'code-line';
 }
 
 export interface ParagraphElement extends BaseElement {
@@ -92,6 +106,8 @@ export type CustomElement = (
   | TextElement
   | MathElement
   | InlineMathElement
+  | CodeBlockElement
+  | CodeLineElement
 ) &
   Indexable;
 
@@ -105,10 +121,15 @@ export interface FormattedText {
 
 export type CustomText = FormattedText;
 
+export type CustomBaseRange = BaseRange & {
+  token?: true;
+};
+
 declare module 'slate' {
   interface CustomTypes {
     Editor: CustomEditor;
     Element: CustomElement;
     Text: CustomText;
+    BaseRange: CustomBaseRange;
   }
 }

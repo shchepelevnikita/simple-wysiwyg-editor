@@ -1,6 +1,8 @@
 import { type RenderLeafProps } from 'slate-react';
 
 export const Leaf = ({ attributes, children, leaf }: RenderLeafProps): React.ReactElement => {
+  const { text, ...rest } = leaf;
+
   if (leaf.bold) {
     children = <strong>{children}</strong>;
   }
@@ -17,5 +19,9 @@ export const Leaf = ({ attributes, children, leaf }: RenderLeafProps): React.Rea
     children = <u>{children}</u>;
   }
 
-  return <span {...attributes}>{children}</span>;
+  return (
+    <span {...attributes} className={Object.keys(rest).join(' ')}>
+      {children}
+    </span>
+  );
 };
